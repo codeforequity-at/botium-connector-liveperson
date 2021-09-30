@@ -1,0 +1,8 @@
+test
+
+#bot
+Hi there! I'm Botium's automated concierge bot.
+
+#bot
+How can I help you today?
+BUTTONS Hours of Operation|Contact Us|Get Help Now
