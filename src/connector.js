@@ -1,6 +1,7 @@
 const util = require('util')
 const _ = require('lodash')
 const randomize = require('randomatic')
+const mime = require('mime-types')
 const debug = require('debug')('botium-connector-liveperson')
 const { getDomainByServiceName, getAccessToken, getJwsToken, openConversation, closeConversation } = require('./helper')
 
@@ -143,6 +144,10 @@ class BotiumConnectorLivePerson {
             text: _.isString(b) ? b : b.title || b.text || b.label,
             payload: !_.isString(b) ? mapButtonPayload(b.click) : null
           })
+          const mapMedia = (m) => ({
+            mediaUri: _.isString(m) ? m : m.url,
+            mimeType: (_.isString(m) ? mime.lookup(m) : mime.lookup(m.url)) || 'application/unknown'
+          })
 
           const event = _.get(botMsg.sourceData, 'body.changes[0].event')
           const metadata = _.get(botMsg.sourceData, 'body.changes[0].originatorMetadata')
@@ -164,12 +169,50 @@ class BotiumConnectorLivePerson {
                 }
               }
             } else if (event.type === 'RichContentEvent') {
-              for (const element of event.content.elements) {
-                if (element.type === 'text') {
-                  botMsg.messageText = element.text
+              if (event.content.type === 'image') {
+                botMsg.media.push(mapMedia(event.content))
+              } else if (event.content.tag === 'button') {
+                for (const element of event.content.elements) {
+                  if (element.type === 'text') {
+                    botMsg.messageText = element.text
+                  }
+                  if (element.type === 'button') {
+                    botMsg.buttons.push(mapButton(element))
+                  }
                 }
-                if (element.type === 'button') {
-                  botMsg.buttons.push(mapButton(element))
+              } else if (event.content.tag === 'generic') {
+                const elements = event.content.elements
+                const indexes = elements.reduce((a, e, i) => {
+                  if (e.tag === 'title') { a.push(i) }
+                  return a
+                }, [])
+                for (const i of indexes) {
+                  const card = {
+                    text: elements[i].text
+                  }
+                  if (elements[i - 1] && elements[i - 1].type === 'image') {
+                    card.media = [mapMedia(elements[i - 1])]
+                  }
+
+                  if (elements[i + 1] && elements[i + 1].tag === 'subtitle') {
+                    card.content = elements[i + 1].text
+                    if (elements[i + 2] && elements[i + 2].tag === 'button') {
+                      card.buttons = []
+                      for (const e of elements[i + 2].elements) {
+                        if (e.type === 'button') {
+                          card.buttons.push(mapButton(e))
+                        }
+                      }
+                    }
+                  } else if (elements[i + 1] && elements[i + 1].tag === 'button') {
+                    card.buttons = []
+                    for (const e of elements[i + 1].elements) {
+                      if (e.type === 'button') {
+                        card.buttons.push(mapButton(e))
+                      }
+                    }
+                  }
+                  botMsg.cards.push(card)
                 }
               }
             }

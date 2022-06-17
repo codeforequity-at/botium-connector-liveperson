@@ -51,7 +51,7 @@ const getAccessToken = async (clientId, clientSecret, accountId) => {
 const _renewAccessToken = async (clientId, clientSecret, accountId) => {
   const jwtDomain = await getDomainByServiceName(JWT_TOKEN_SERVICE_NAME, accountId)
   const requestOptions = {
-    url: `https://${jwtDomain}/sentinel/api/account/72165163/app/token?v=1.0&grant_type=client_credentials`,
+    url: `https://${jwtDomain}/sentinel/api/account/${accountId}/app/token?v=1.0&grant_type=client_credentials`,
     method: 'POST',
     timeout: 30000,
     form: {
