@@ -88,7 +88,7 @@ const getJwsToken = async (clientId, clientSecret, accountId) => {
   return jwsToken
 }
 
-const openConversation = async ({ clientId, clientSecret, accountId, skillId, autoMessages, quickReplies, multiDialog, richContent, userProfile }) => {
+const openConversation = async ({ clientId, clientSecret, accountId, campaignId, engagementId, autoMessages, quickReplies, multiDialog, richContent, userProfile, livepersonSessionId }) => {
   const clientProperties = {
     type: 'ClientProperties',
     features: []
@@ -111,14 +111,19 @@ const openConversation = async ({ clientId, clientSecret, accountId, skillId, au
     type: 'cm.ConsumerRequestConversation',
     body: {
       brandId: accountId,
-      skillId: skillId,
       conversationContext: {
-        visitorId: 'Thisisavisitorid',
-        sessionId: 'botiumsessionid',
+        sessionId: livepersonSessionId,
         interactionContextId: '2',
         type: 'SharkContext',
         lang: 'en-US'
       }
+    }
+  }
+
+  if (campaignId && engagementId) {
+    consumerConversationReqObject.body.campaignInfo = {
+      campaignId,
+      engagementId
     }
   }
 

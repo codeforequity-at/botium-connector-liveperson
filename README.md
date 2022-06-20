@@ -129,9 +129,11 @@ Live Person installed application secret
 ### LIVEPERSON_ACCOUNT_ID*
 Your account id
 
-### LIVEPERSON_SKILL_ID
-Skill ID you would like to route the conversation to. 
-If you don't specify then it will use -1 as default to target all skills available
+### LIVEPERSON_CAMPAIGN_ID
+Filling `campaignId` and `engagementId` you can route your conversation to a specific bot.
+
+### LIVEPERSON_ENGAGEMENT_ID
+Filling `campaignId` and `engagementId` you can route your conversation to a specific bot.
 
 ### LIVEPERSON_AUTO_MESSAGES_FEATURE
 To display chatbot welcome messages set it to true

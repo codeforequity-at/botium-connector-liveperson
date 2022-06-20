@@ -15,6 +15,8 @@ const Capabilities = {
   LIVEPERSON_CLIENT_SECRET: 'LIVEPERSON_CLIENT_SECRET',
   LIVEPERSON_ACCOUNT_ID: 'LIVEPERSON_ACCOUNT_ID',
   LIVEPERSON_SKILL_ID: 'LIVEPERSON_SKILL_ID',
+  LIVEPERSON_CAMPAIGN_ID: 'LIVEPERSON_CAMPAIGN_ID',
+  LIVEPERSON_ENGAGEMENT_ID: 'LIVEPERSON_ENGAGEMENT_ID',
   LIVEPERSON_AUTO_MESSAGES_FEATURE: 'LIVEPERSON_AUTO_MESSAGES_FEATURE',
   LIVEPERSON_QUICK_REPLIES_FEATURE: 'LIVEPERSON_QUICK_REPLIES_FEATURE',
   LIVEPERSON_RICH_CONTENT_FEATURE: 'LIVEPERSON_RICH_CONTENT_FEATURE',
@@ -56,16 +58,19 @@ class BotiumConnectorLivePerson {
             }
           }`,
         [CoreCapabilities.SIMPLEREST_START_HOOK]: async ({ context }) => {
+          context.livepersonSessionId = randomize('0', 10)
           const params = {
             clientId: this.caps[Capabilities.LIVEPERSON_CLIENT_ID],
             clientSecret: this.caps[Capabilities.LIVEPERSON_CLIENT_SECRET],
             accountId: this.caps[Capabilities.LIVEPERSON_ACCOUNT_ID],
-            skillId: this.caps[Capabilities.LIVEPERSON_SKILL_ID],
+            campaignId: this.caps[Capabilities.LIVEPERSON_CAMPAIGN_ID],
+            engagementId: this.caps[Capabilities.LIVEPERSON_ENGAGEMENT_ID],
             autoMessages: this.caps[Capabilities.LIVEPERSON_AUTO_MESSAGES_FEATURE],
             quickReplies: this.caps[Capabilities.LIVEPERSON_QUICK_REPLIES_FEATURE],
             multiDialog: this.caps[Capabilities.LIVEPERSON_MULTI_DIALOG_FEATURE],
             richContent: this.caps[Capabilities.LIVEPERSON_RICH_CONTENT_FEATURE],
-            userProfile: this.caps[Capabilities.LIVEPERSON_USER_PROFILE]
+            userProfile: this.caps[Capabilities.LIVEPERSON_USER_PROFILE],
+            livepersonSessionId: context.livepersonSessionId
           }
           const conversationId = await openConversation(params)
           if (!conversationId) throw new Error('Can not open conversation')
