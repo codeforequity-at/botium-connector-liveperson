@@ -88,15 +88,12 @@ const getJwsToken = async (clientId, clientSecret, accountId) => {
   return jwsToken
 }
 
-const openConversation = async ({ clientId, clientSecret, accountId, campaignId, engagementId, autoMessages, quickReplies, multiDialog, richContent, userProfile, livepersonSessionId }) => {
+const openConversation = async ({ clientId, clientSecret, accountId, campaignId, engagementId, autoMessages, userProfile, livepersonSessionId }) => {
   const clientProperties = {
     type: 'ClientProperties',
     features: []
   }
   if (autoMessages) clientProperties.features.push('AUTO_MESSAGES')
-  if (quickReplies) clientProperties.features.push('QUICK_REPLIES')
-  if (multiDialog) clientProperties.features.push('MULTI_DIALOG')
-  if (richContent) clientProperties.features.push('RICH_CONTENT')
 
   const userProfileRequestObject = {
     kind: 'req',
