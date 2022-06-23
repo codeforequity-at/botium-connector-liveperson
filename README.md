@@ -136,13 +136,7 @@ Filling `campaignId` and `engagementId` you can route your conversation to a spe
 Filling `campaignId` and `engagementId` you can route your conversation to a specific bot.
 
 ### LIVEPERSON_AUTO_MESSAGES_FEATURE
-To display chatbot welcome messages set it to true
-
-### LIVEPERSON_QUICK_REPLIES_FEATURE
-To turn on quick replies feature set it to true
-
-### LIVEPERSON_RICH_CONTENT_FEATURE
-To turn on rich content feature set it to true
+To turn on auto messages feature it to true
 
 ### LIVEPERSON_USER_PROFILE
 You can define a user profile object.

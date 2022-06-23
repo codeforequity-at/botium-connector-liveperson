@@ -18,9 +18,6 @@ const Capabilities = {
   LIVEPERSON_CAMPAIGN_ID: 'LIVEPERSON_CAMPAIGN_ID',
   LIVEPERSON_ENGAGEMENT_ID: 'LIVEPERSON_ENGAGEMENT_ID',
   LIVEPERSON_AUTO_MESSAGES_FEATURE: 'LIVEPERSON_AUTO_MESSAGES_FEATURE',
-  LIVEPERSON_QUICK_REPLIES_FEATURE: 'LIVEPERSON_QUICK_REPLIES_FEATURE',
-  LIVEPERSON_RICH_CONTENT_FEATURE: 'LIVEPERSON_RICH_CONTENT_FEATURE',
-  LIVEPERSON_MULTI_DIALOG_FEATURE: 'LIVEPERSON_MULTI_DIALOG_FEATURE',
   LIVEPERSON_USER_PROFILE: 'LIVEPERSON_USER_PROFILE'
 }
 
@@ -66,9 +63,6 @@ class BotiumConnectorLivePerson {
             campaignId: this.caps[Capabilities.LIVEPERSON_CAMPAIGN_ID],
             engagementId: this.caps[Capabilities.LIVEPERSON_ENGAGEMENT_ID],
             autoMessages: this.caps[Capabilities.LIVEPERSON_AUTO_MESSAGES_FEATURE],
-            quickReplies: this.caps[Capabilities.LIVEPERSON_QUICK_REPLIES_FEATURE],
-            multiDialog: this.caps[Capabilities.LIVEPERSON_MULTI_DIALOG_FEATURE],
-            richContent: this.caps[Capabilities.LIVEPERSON_RICH_CONTENT_FEATURE],
             userProfile: this.caps[Capabilities.LIVEPERSON_USER_PROFILE],
             livepersonSessionId: context.livepersonSessionId
           }
@@ -90,10 +84,7 @@ class BotiumConnectorLivePerson {
             type: 'ClientProperties',
             features: []
           }
-          // if (this.caps[Capabilities.LIVEPERSON_AUTO_MESSAGES_FEATURE]) clientProperties.features.push('AUTO_MESSAGES')
-          if (this.caps[Capabilities.LIVEPERSON_QUICK_REPLIES_FEATURE]) clientProperties.features.push('QUICK_REPLIES')
-          if (this.caps[Capabilities.LIVEPERSON_MULTI_DIALOG_FEATURE]) clientProperties.features.push('MULTI_DIALOG')
-          if (this.caps[Capabilities.LIVEPERSON_RICH_CONTENT_FEATURE]) clientProperties.features.push('RICH_CONTENT')
+          if (this.caps[Capabilities.LIVEPERSON_AUTO_MESSAGES_FEATURE]) clientProperties.features.push('AUTO_MESSAGES')
           const headers = {
             'content-type': 'application/json',
             authorization: await getAccessToken(clientId, clientSecret, accountId),
