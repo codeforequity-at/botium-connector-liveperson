@@ -104,7 +104,12 @@ class BotiumConnectorLivePerson {
             if (!msg.buttons[0].payload) {
               body.event.message = msg.buttons[0].text
             } else {
-              const payload = msg.buttons[0].payload
+              let payload
+              try {
+                payload = JSON.parse(msg.buttons[0].payload)
+              } catch (e) {
+                payload = msg.buttons[0].payload
+              }
               let publishText
               if (payload.actions && payload.actions.length > 0) {
                 for (const action of payload.actions) {
@@ -116,7 +121,7 @@ class BotiumConnectorLivePerson {
               if (publishText) {
                 body.event.message = publishText
               } else {
-                throw new Error('Not supported yet')
+                body.event.message = payload
               }
             }
           } else if (msg.media && msg.media.length > 0) {
