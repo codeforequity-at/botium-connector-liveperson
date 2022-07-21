@@ -5,10 +5,7 @@ const randomize = require('randomatic')
 const JWT_TOKEN_SERVICE_NAME = 'sentinel'
 const JWS_TOKEN_SERVICE_NAME = 'idp'
 const ASYNC_MESSAGING_SERVICE_NAME = 'asyncMessagingEnt'
-const DEFAULT_USER_PROFILE = {
-  firstName: 'botium',
-  role: 'consumer'
-}
+const DEFAULT_USER_PROFILE = {}
 
 const baseURIs = []
 let accessToken
