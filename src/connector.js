@@ -116,6 +116,8 @@ class BotiumConnectorLivePerson {
           } else {
             body.event.message = msg.messageText
           }
+
+          requestOptions.json = true
           requestOptions.body = {
             kind: 'req',
             id: randomize('0', 10),
