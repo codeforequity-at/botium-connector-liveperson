@@ -40,8 +40,6 @@ class BotiumConnectorLivePerson {
     if (!this.caps[Capabilities.LIVEPERSON_ACCOUNT_ID]) throw new Error('LIVEPERSON_ACCOUNT_ID capability required')
 
     if (!this.delegateContainer) {
-      this.visitorId = 'A3ZTY3Zjk1MDExZTczYTU4'
-
       const messagingDomain = await getDomainByServiceName(ASYNC_MESSAGING_SERVICE_NAME, this.caps[Capabilities.LIVEPERSON_ACCOUNT_ID])
       if (!messagingDomain) throw new Error(`Can't find domain for '${ASYNC_MESSAGING_SERVICE_NAME}' service`)
 
