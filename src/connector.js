@@ -70,12 +70,6 @@ class BotiumConnectorLivePerson {
           if (!conversationId) throw new Error('Can not open conversation')
           context.conversationId = conversationId
         },
-        [CoreCapabilities.SIMPLEREST_BODY_TEMPLATE]:
-          `{
-            "kind": "req",
-            "id": ${randomize('0', 10)},
-            "type": "ms.PublishEvent"
-          }`,
         [CoreCapabilities.SIMPLEREST_REQUEST_HOOK]: async ({ requestOptions, msg, context }) => {
           const clientId = this.caps[Capabilities.LIVEPERSON_CLIENT_ID]
           const clientSecret = this.caps[Capabilities.LIVEPERSON_CLIENT_SECRET]
@@ -95,7 +89,6 @@ class BotiumConnectorLivePerson {
 
           const body = {}
           body.dialogId = context.conversationId
-          body.conversationId = context.conversationId
           body.event = {
             type: 'ContentEvent',
             contentType: 'text/plain'
@@ -129,7 +122,12 @@ class BotiumConnectorLivePerson {
           } else {
             body.event.message = msg.messageText
           }
-          requestOptions.body.body = body
+          requestOptions.body = {
+            kind: 'req',
+            id: randomize('0', 10),
+            type: 'ms.PublishEvent',
+            body
+          }
         },
         [CoreCapabilities.SIMPLEREST_RESPONSE_HOOK]: ({ botMsg }) => {
           const mapButtonPayload = (p) => {
