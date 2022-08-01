@@ -48,12 +48,6 @@ class BotiumConnectorLivePerson {
       this.delegateCaps = {
         [CoreCapabilities.SIMPLEREST_URL]: `https://${messagingDomain}/api/account/${this.caps[Capabilities.LIVEPERSON_ACCOUNT_ID]}/messaging/consumer/conversation/send?v=3`,
         [CoreCapabilities.SIMPLEREST_METHOD]: 'POST',
-        [CoreCapabilities.SIMPLEREST_BODY_TEMPLATE]:
-          `{
-            "userId": "{{botium.conversationId}}",
-            "messagePayload": {
-            }
-          }`,
         [CoreCapabilities.SIMPLEREST_START_HOOK]: async ({ context }) => {
           context.livepersonSessionId = randomize('0', 10)
           const params = {
