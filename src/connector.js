@@ -162,18 +162,7 @@ class BotiumConnectorLivePerson {
                 }
               }
             } else if (event.type === 'RichContentEvent') {
-              if (event.content.type === 'image') {
-                botMsg.media.push(mapMedia(event.content))
-              } else if (event.content.tag === 'button') {
-                for (const element of event.content.elements) {
-                  if (element.type === 'text') {
-                    botMsg.messageText = element.text
-                  }
-                  if (element.type === 'button') {
-                    botMsg.buttons.push(mapButton(element))
-                  }
-                }
-              } else if (event.content.tag === 'generic') {
+              if (event.content.tag === 'generic') {
                 const elements = event.content.elements
                 const indexes = elements.reduce((a, e, i) => {
                   if (e.tag === 'title') { a.push(i) }
@@ -206,6 +195,18 @@ class BotiumConnectorLivePerson {
                     }
                   }
                   botMsg.cards.push(card)
+                }
+              } else {
+                for (const element of event.content.elements) {
+                  if (element.type === 'text') {
+                    botMsg.messageText = element.text
+                  } else if (element.type === 'button') {
+                    botMsg.buttons.push(mapButton(element))
+                  } else if (element.type === 'image') {
+                    botMsg.media.push(mapMedia(event.content))
+                  } else {
+                    debug(`The following RichContent element is not supported yet: ${JSON.stringify(element, null, 2)}`)
+                  }
                 }
               }
             }
