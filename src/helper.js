@@ -1,6 +1,7 @@
 const request = require('request-promise-native')
 const _ = require('lodash')
 const randomize = require('randomatic')
+const debug = require('debug')('botium-connector-liveperson')
 
 const JWT_TOKEN_SERVICE_NAME = 'sentinel'
 const JWS_TOKEN_SERVICE_NAME = 'idp'
@@ -57,13 +58,13 @@ const _renewAccessToken = async (clientId, clientSecret, accountId) => {
     },
     json: true
   }
+  debug(`Request access token with the following requestOptions: ${JSON.stringify(requestOptions, null, 2)}`)
   const result = await request(requestOptions)
   accessToken = result.access_token
 }
 
-const getJwsToken = async (clientId, clientSecret, accountId) => {
+const getJwsToken = async (clientId, clientSecret, accountId, extConsumerId) => {
   if (!jwsToken) {
-    const extConsumerId = randomize('0', 10)
     const jwsDomain = await getDomainByServiceName(JWS_TOKEN_SERVICE_NAME, accountId)
     const requestOptions = {
       url: `https://${jwsDomain}/api/account/${accountId}/consumer`,
@@ -78,6 +79,7 @@ const getJwsToken = async (clientId, clientSecret, accountId) => {
       json: true,
       timeout: 30000
     }
+    debug(`Request consumerJWS with the following requestOptions: ${JSON.stringify(requestOptions, null, 2)}`)
     const result = await request(requestOptions)
     jwsToken = result.token
   }
@@ -85,7 +87,7 @@ const getJwsToken = async (clientId, clientSecret, accountId) => {
   return jwsToken
 }
 
-const openConversation = async ({ clientId, clientSecret, accountId, campaignId, engagementId, autoMessages, userProfile, livepersonSessionId }) => {
+const openConversation = async ({ clientId, clientSecret, accountId, extConsumerId, campaignId, engagementId, autoMessages, userProfile, livepersonSessionId }) => {
   const clientProperties = {
     type: 'ClientProperties',
     features: []
@@ -128,19 +130,20 @@ const openConversation = async ({ clientId, clientSecret, accountId, campaignId,
     headers: {
       'content-type': 'application/json',
       authorization: await getAccessToken(clientId, clientSecret, accountId),
-      'X-LP-ON-BEHALF': await getJwsToken(clientId, clientSecret, accountId),
+      'X-LP-ON-BEHALF': await getJwsToken(clientId, clientSecret, accountId, extConsumerId),
       'Client-Properties': clientProperties
     },
     body: [userProfileRequestObject, consumerConversationReqObject],
     json: true,
     timeout: 30000
   }
+  debug(`Open conversation with the following requestOptions: ${JSON.stringify(requestOptions, null, 2)}`)
   const result = await request(requestOptions)
   const conversation = _.find(result, r => r.reqId === consumerReqId)
   return conversation ? conversation.body.conversationId : undefined
 }
 
-const closeConversation = async ({ clientId, clientSecret, accountId, conversationId }) => {
+const closeConversation = async ({ clientId, clientSecret, accountId, extConsumerId, conversationId }) => {
   const closeConversationRequestObject = {
     kind: 'req',
     id: randomize('0', 8),
@@ -161,12 +164,13 @@ const closeConversation = async ({ clientId, clientSecret, accountId, conversati
     headers: {
       'content-type': 'application/json',
       authorization: await getAccessToken(clientId, clientSecret, accountId),
-      'X-LP-ON-BEHALF': await getJwsToken(clientId, clientSecret, accountId)
+      'X-LP-ON-BEHALF': await getJwsToken(clientId, clientSecret, accountId, extConsumerId)
     },
     body: closeConversationRequestObject,
     json: true,
     timeout: 30000
   }
+  debug(`Close conversation with the following requestOptions: ${JSON.stringify(requestOptions, null, 2)}`)
   await request(requestOptions)
 }
 

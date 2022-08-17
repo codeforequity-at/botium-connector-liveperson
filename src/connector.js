@@ -18,7 +18,8 @@ const Capabilities = {
   LIVEPERSON_CAMPAIGN_ID: 'LIVEPERSON_CAMPAIGN_ID',
   LIVEPERSON_ENGAGEMENT_ID: 'LIVEPERSON_ENGAGEMENT_ID',
   LIVEPERSON_AUTO_MESSAGES_FEATURE: 'LIVEPERSON_AUTO_MESSAGES_FEATURE',
-  LIVEPERSON_USER_PROFILE: 'LIVEPERSON_USER_PROFILE'
+  LIVEPERSON_USER_PROFILE: 'LIVEPERSON_USER_PROFILE',
+  LIVEPERSON_EXT_CONSUMER_ID: 'LIVEPERSON_EXT_CONSUMER_ID'
 }
 
 class BotiumConnectorLivePerson {
@@ -38,6 +39,9 @@ class BotiumConnectorLivePerson {
     if (!this.caps[Capabilities.LIVEPERSON_CLIENT_ID]) throw new Error('LIVEPERSON_CLIENT_ID capability required')
     if (!this.caps[Capabilities.LIVEPERSON_CLIENT_SECRET]) throw new Error('LIVEPERSON_CLIENT_SECRET capability required')
     if (!this.caps[Capabilities.LIVEPERSON_ACCOUNT_ID]) throw new Error('LIVEPERSON_ACCOUNT_ID capability required')
+    if (_.isEmpty(this.caps[Capabilities.LIVEPERSON_EXT_CONSUMER_ID])) {
+      this.caps[Capabilities.LIVEPERSON_EXT_CONSUMER_ID] = randomize('0', 10)
+    }
 
     if (!this.delegateContainer) {
       const messagingDomain = await getDomainByServiceName(ASYNC_MESSAGING_SERVICE_NAME, this.caps[Capabilities.LIVEPERSON_ACCOUNT_ID])
@@ -52,6 +56,7 @@ class BotiumConnectorLivePerson {
             clientId: this.caps[Capabilities.LIVEPERSON_CLIENT_ID],
             clientSecret: this.caps[Capabilities.LIVEPERSON_CLIENT_SECRET],
             accountId: this.caps[Capabilities.LIVEPERSON_ACCOUNT_ID],
+            extConsumerId: this.caps[Capabilities.LIVEPERSON_EXT_CONSUMER_ID],
             campaignId: this.caps[Capabilities.LIVEPERSON_CAMPAIGN_ID],
             engagementId: this.caps[Capabilities.LIVEPERSON_ENGAGEMENT_ID],
             autoMessages: this.caps[Capabilities.LIVEPERSON_AUTO_MESSAGES_FEATURE],
@@ -66,6 +71,7 @@ class BotiumConnectorLivePerson {
           const clientId = this.caps[Capabilities.LIVEPERSON_CLIENT_ID]
           const clientSecret = this.caps[Capabilities.LIVEPERSON_CLIENT_SECRET]
           const accountId = this.caps[Capabilities.LIVEPERSON_ACCOUNT_ID]
+          const extConsumerId = this.caps[Capabilities.LIVEPERSON_EXT_CONSUMER_ID]
           const clientProperties = {
             type: 'ClientProperties',
             features: []
@@ -74,7 +80,7 @@ class BotiumConnectorLivePerson {
           const headers = {
             'content-type': 'application/json',
             authorization: await getAccessToken(clientId, clientSecret, accountId),
-            'X-LP-ON-BEHALF': await getJwsToken(clientId, clientSecret, accountId),
+            'X-LP-ON-BEHALF': await getJwsToken(clientId, clientSecret, accountId, extConsumerId),
             'Client-Properties': clientProperties
           }
           requestOptions.headers = Object.assign(requestOptions.headers || {}, headers)
@@ -219,6 +225,7 @@ class BotiumConnectorLivePerson {
             clientId: this.caps[Capabilities.LIVEPERSON_CLIENT_ID],
             clientSecret: this.caps[Capabilities.LIVEPERSON_CLIENT_SECRET],
             accountId: this.caps[Capabilities.LIVEPERSON_ACCOUNT_ID],
+            extConsumerId: this.caps[Capabilities.LIVEPERSON_EXT_CONSUMER_ID],
             conversationId: context.conversationId
           }
           await closeConversation(params)
