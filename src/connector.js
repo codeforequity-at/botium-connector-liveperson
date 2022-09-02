@@ -3,7 +3,7 @@ const _ = require('lodash')
 const randomize = require('randomatic')
 const mime = require('mime-types')
 const debug = require('debug')('botium-connector-liveperson')
-const { getDomainByServiceName, getAccessToken, getJwsToken, openConversation, closeConversation } = require('./helper')
+const Helper = require('./helper')
 
 const SimpleRestContainer = require('botium-core/src/containers/plugins/SimpleRestContainer')
 const { Capabilities: CoreCapabilities } = require('botium-core')
@@ -29,6 +29,7 @@ class BotiumConnectorLivePerson {
     this.delegateContainer = null
     this.delegateCaps = null
     this.conversationId = null
+    this.helper = new Helper()
   }
 
   async Validate () {
@@ -44,7 +45,7 @@ class BotiumConnectorLivePerson {
     }
 
     if (!this.delegateContainer) {
-      const messagingDomain = await getDomainByServiceName(ASYNC_MESSAGING_SERVICE_NAME, this.caps[Capabilities.LIVEPERSON_ACCOUNT_ID])
+      const messagingDomain = await this.helper.getDomainByServiceName(ASYNC_MESSAGING_SERVICE_NAME, this.caps[Capabilities.LIVEPERSON_ACCOUNT_ID])
       if (!messagingDomain) throw new Error(`Can't find domain for '${ASYNC_MESSAGING_SERVICE_NAME}' service`)
 
       this.delegateCaps = {
@@ -63,7 +64,7 @@ class BotiumConnectorLivePerson {
             userProfile: this.caps[Capabilities.LIVEPERSON_USER_PROFILE],
             livepersonSessionId: context.livepersonSessionId
           }
-          const conversationId = await openConversation(params)
+          const conversationId = await this.helper.openConversation(params)
           if (!conversationId) throw new Error('Can not open conversation')
           context.conversationId = conversationId
         },
@@ -79,8 +80,8 @@ class BotiumConnectorLivePerson {
           if (this.caps[Capabilities.LIVEPERSON_AUTO_MESSAGES_FEATURE]) clientProperties.features.push('AUTO_MESSAGES')
           const headers = {
             'content-type': 'application/json',
-            authorization: await getAccessToken(clientId, clientSecret, accountId),
-            'X-LP-ON-BEHALF': await getJwsToken(clientId, clientSecret, accountId, extConsumerId),
+            authorization: await this.helper.getAccessToken(clientId, clientSecret, accountId),
+            'X-LP-ON-BEHALF': await this.helper.getJwsToken(clientId, clientSecret, accountId, extConsumerId),
             'Client-Properties': clientProperties
           }
           requestOptions.headers = Object.assign(requestOptions.headers || {}, headers)
@@ -228,7 +229,7 @@ class BotiumConnectorLivePerson {
             extConsumerId: this.caps[Capabilities.LIVEPERSON_EXT_CONSUMER_ID],
             conversationId: context.conversationId
           }
-          await closeConversation(params)
+          await this.helper.closeConversation(params)
         }
       }
       for (const capKey of Object.keys(this.caps).filter(c => c.startsWith('SIMPLEREST'))) {
