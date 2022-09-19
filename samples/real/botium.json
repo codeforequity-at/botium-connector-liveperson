@@ -3,14 +3,19 @@
     "Capabilities": {
       "PROJECTNAME": "Botium Project Live Person",
       "CONTAINERMODE": "liveperson",
-      "LIVEPERSON_CLIENT_ID": "018908a5-aa8f-4f2a-bae4-1efe1f092e27",
-      "LIVEPERSON_CLIENT_SECRET": "s8r6ttaar0m5ev2qaqhkbs9m5",
-      "LIVEPERSON_SKILL_ID": "bdee011f-9483-4a31-8ab7-1f96234d97b2",
-      "LIVEPERSON_ACCOUNT_ID": "72165111",
-      "LIVEPERSON_AUTO_MESSAGES_FEATURE": true,
-      "LIVEPERSON_QUICK_REPLIES_FEATURE": true,
-      "LIVEPERSON_RICH_CONTENT_FEATURE": true,
-      "SIMPLEREST_INBOUND_REDISURL": "redis://127.0.0.1:6379"
+      "LIVEPERSON_CLIENT_ID": "...",
+      "LIVEPERSON_CLIENT_SECRET": "...",
+      "LIVEPERSON_ACCOUNT_ID": "...",
+      "LIVEPERSON_CAMPAIGN_ID": "...",
+      "LIVEPERSON_ENGAGEMENT_ID": "...",
+      "LIVEPERSON_AUTO_MESSAGES_FEATURE": false,
+      "SIMPLEREST_INBOUND_REDISURL": "redis://127.0.0.1:6379",
+      "ASSERTERS": [
+        {
+          "ref": "CHECKLIVEPERSONSKILL",
+          "src": "botium-connector-liveperson/CHECKLIVEPERSONSKILL"
+        }
+      ]
     }
   }
 }

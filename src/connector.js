@@ -14,7 +14,6 @@ const Capabilities = {
   LIVEPERSON_CLIENT_ID: 'LIVEPERSON_CLIENT_ID',
   LIVEPERSON_CLIENT_SECRET: 'LIVEPERSON_CLIENT_SECRET',
   LIVEPERSON_ACCOUNT_ID: 'LIVEPERSON_ACCOUNT_ID',
-  LIVEPERSON_SKILL_ID: 'LIVEPERSON_SKILL_ID',
   LIVEPERSON_CAMPAIGN_ID: 'LIVEPERSON_CAMPAIGN_ID',
   LIVEPERSON_ENGAGEMENT_ID: 'LIVEPERSON_ENGAGEMENT_ID',
   LIVEPERSON_AUTO_MESSAGES_FEATURE: 'LIVEPERSON_AUTO_MESSAGES_FEATURE',
@@ -29,6 +28,7 @@ class BotiumConnectorLivePerson {
     this.delegateContainer = null
     this.delegateCaps = null
     this.conversationId = null
+    this.currentSkillId = null
     this.helper = new Helper()
   }
 
@@ -131,6 +131,20 @@ class BotiumConnectorLivePerson {
           }
         },
         [CoreCapabilities.SIMPLEREST_RESPONSE_HOOK]: ({ botMsg }) => {
+          const type = _.get(botMsg.sourceData, 'type')
+
+          if (type === 'cqm.ExConversationChangeNotification') {
+            const currentSkillId = _.get(botMsg.sourceData, 'body.changes[0].result.conversationDetails.skillId')
+            // As i see if there is no skill, then the skill id is -1.
+            // So we always have a skill id
+            if (!_.isNil(currentSkillId) && this.currentSkillId !== currentSkillId) {
+              debug(`New skill: ${currentSkillId}`)
+              this.currentSkillId = currentSkillId
+            }
+
+            return
+          }
+
           const mapButtonPayload = (p) => {
             let payload
             try {
@@ -150,6 +164,7 @@ class BotiumConnectorLivePerson {
           })
 
           const event = _.get(botMsg.sourceData, 'body.changes[0].event')
+
           const metadata = _.get(botMsg.sourceData, 'body.changes[0].originatorMetadata')
 
           if (metadata && metadata.role === 'ASSIGNED_AGENT' &&
@@ -219,7 +234,8 @@ class BotiumConnectorLivePerson {
             }
           }
         },
-        [CoreCapabilities.SIMPLEREST_INBOUND_SELECTOR_JSONPATH]: '$.body.body.changes[0].conversationId',
+        // $.body.body.changes[0].result.convId: to include cqm.ExConversationChangeNotification
+        [CoreCapabilities.SIMPLEREST_INBOUND_SELECTOR_JSONPATH]: ['$.body.body.changes[0].conversationId', '$.body.body.changes[0].result.convId'],
         [CoreCapabilities.SIMPLEREST_INBOUND_SELECTOR_VALUE]: '{{context.conversationId}}',
         [CoreCapabilities.SIMPLEREST_STOP_HOOK]: async ({ context }) => {
           const params = {
@@ -258,6 +274,7 @@ class BotiumConnectorLivePerson {
 
   async Stop () {
     await this.delegateContainer.Stop()
+    this.currentSkillId = null
   }
 
   async Clean () {
