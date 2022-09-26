@@ -167,7 +167,7 @@ class BotiumConnectorLivePerson {
 
           const metadata = _.get(botMsg.sourceData, 'body.changes[0].originatorMetadata')
 
-          if (metadata && metadata.role === 'ASSIGNED_AGENT' &&
+          if (metadata && metadata.role !== 'CONSUMER' &&
             event && (event.type === 'ContentEvent' || event.type === 'RichContentEvent')) {
             debug(`Response Body: ${util.inspect(botMsg.sourceData, false, null, true)}`)
             botMsg.buttons = botMsg.buttons || []
@@ -238,14 +238,18 @@ class BotiumConnectorLivePerson {
         [CoreCapabilities.SIMPLEREST_INBOUND_SELECTOR_JSONPATH]: ['$.body.body.changes[0].conversationId', '$.body.body.changes[0].result.convId'],
         [CoreCapabilities.SIMPLEREST_INBOUND_SELECTOR_VALUE]: '{{context.conversationId}}',
         [CoreCapabilities.SIMPLEREST_STOP_HOOK]: async ({ context }) => {
-          const params = {
-            clientId: this.caps[Capabilities.LIVEPERSON_CLIENT_ID],
-            clientSecret: this.caps[Capabilities.LIVEPERSON_CLIENT_SECRET],
-            accountId: this.caps[Capabilities.LIVEPERSON_ACCOUNT_ID],
-            extConsumerId: this.caps[Capabilities.LIVEPERSON_EXT_CONSUMER_ID],
-            conversationId: context.conversationId
+          try {
+            const params = {
+              clientId: this.caps[Capabilities.LIVEPERSON_CLIENT_ID],
+              clientSecret: this.caps[Capabilities.LIVEPERSON_CLIENT_SECRET],
+              accountId: this.caps[Capabilities.LIVEPERSON_ACCOUNT_ID],
+              extConsumerId: this.caps[Capabilities.LIVEPERSON_EXT_CONSUMER_ID],
+              conversationId: context.conversationId
+            }
+            await this.helper.closeConversation(params)
+          } finally {
+            this.helper = new Helper()
           }
-          await this.helper.closeConversation(params)
         }
       }
       for (const capKey of Object.keys(this.caps).filter(c => c.startsWith('SIMPLEREST'))) {
