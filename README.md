@@ -67,9 +67,6 @@ You have to copy the `secret` column value into the
       "LIVEPERSON_CLIENT_ID": "018908a5-aa8f-4f2a-bae4-1efe1f092e27",
       "LIVEPERSON_CLIENT_SECRET": "s8r6ttaar0m5ev2qaqhkbs9m5",
       "LIVEPERSON_ACCOUNT_ID": "72165163"
-      "LIVEPERSON_AUTO_MESSAGES_FEATURE": true,
-      "LIVEPERSON_QUICK_REPLIES_FEATURE": true,
-      "LIVEPERSON_RICH_CONTENT_FEATURE": true
     }
   }
 }
@@ -135,8 +132,17 @@ Filling `campaignId` and `engagementId` you can route your conversation to a spe
 ### LIVEPERSON_ENGAGEMENT_ID
 Filling `campaignId` and `engagementId` you can route your conversation to a specific bot.
 
-### LIVEPERSON_AUTO_MESSAGES_FEATURE
-To turn on auto messages feature it to true
+### LIVEPERSON_CLIENT_PROPERTIES
+You can define a client properties object, which is sent in the header of the request at open conversion.
+E.g.:
+```
+{
+  "type": "ClientProperties",
+  "features": [
+    "AUTO_MESSAGES"
+  ]
+}
+```
 
 ### LIVEPERSON_USER_PROFILE
 You can define a user profile object.

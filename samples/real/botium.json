@@ -8,7 +8,6 @@
       "LIVEPERSON_ACCOUNT_ID": "...",
       "LIVEPERSON_CAMPAIGN_ID": "...",
       "LIVEPERSON_ENGAGEMENT_ID": "...",
-      "LIVEPERSON_AUTO_MESSAGES_FEATURE": false,
       "SIMPLEREST_INBOUND_REDISURL": "redis://127.0.0.1:6379",
       "ASSERTERS": [
         {

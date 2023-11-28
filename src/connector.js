@@ -16,7 +16,7 @@ const Capabilities = {
   LIVEPERSON_ACCOUNT_ID: 'LIVEPERSON_ACCOUNT_ID',
   LIVEPERSON_CAMPAIGN_ID: 'LIVEPERSON_CAMPAIGN_ID',
   LIVEPERSON_ENGAGEMENT_ID: 'LIVEPERSON_ENGAGEMENT_ID',
-  LIVEPERSON_AUTO_MESSAGES_FEATURE: 'LIVEPERSON_AUTO_MESSAGES_FEATURE',
+  LIVEPERSON_CLIENT_PROPERTIES: 'LIVEPERSON_CLIENT_PROPERTIES',
   LIVEPERSON_USER_PROFILE: 'LIVEPERSON_USER_PROFILE',
   LIVEPERSON_EXT_CONSUMER_ID: 'LIVEPERSON_EXT_CONSUMER_ID'
 }
@@ -60,7 +60,7 @@ class BotiumConnectorLivePerson {
             extConsumerId: this.caps[Capabilities.LIVEPERSON_EXT_CONSUMER_ID],
             campaignId: this.caps[Capabilities.LIVEPERSON_CAMPAIGN_ID],
             engagementId: this.caps[Capabilities.LIVEPERSON_ENGAGEMENT_ID],
-            autoMessages: this.caps[Capabilities.LIVEPERSON_AUTO_MESSAGES_FEATURE],
+            clientPropertiesCap: this.caps[Capabilities.LIVEPERSON_CLIENT_PROPERTIES],
             userProfile: this.caps[Capabilities.LIVEPERSON_USER_PROFILE],
             livepersonSessionId: context.livepersonSessionId
           }
@@ -73,11 +73,8 @@ class BotiumConnectorLivePerson {
           const clientSecret = this.caps[Capabilities.LIVEPERSON_CLIENT_SECRET]
           const accountId = this.caps[Capabilities.LIVEPERSON_ACCOUNT_ID]
           const extConsumerId = this.caps[Capabilities.LIVEPERSON_EXT_CONSUMER_ID]
-          const clientProperties = {
-            type: 'ClientProperties',
-            features: []
-          }
-          if (this.caps[Capabilities.LIVEPERSON_AUTO_MESSAGES_FEATURE]) clientProperties.features.push('AUTO_MESSAGES')
+          const clientPropertiesCap = this.caps[Capabilities.LIVEPERSON_CLIENT_PROPERTIES]
+          const clientProperties = Object.assign(this.helper.defaultClientProperties, clientPropertiesCap || {})
           const headers = {
             'content-type': 'application/json',
             authorization: await this.helper.getAccessToken(clientId, clientSecret, accountId),
