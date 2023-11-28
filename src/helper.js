@@ -13,6 +13,10 @@ class Helper {
     this.baseURIs = []
     this.accessToken = null
     this.jwsToken = null
+    this.defaultClientProperties = {
+      type: 'ClientProperties',
+      features: []
+    }
   }
 
   async getDomainByServiceName (serviceName, accountId) {
@@ -90,12 +94,8 @@ class Helper {
     return this.jwsToken
   }
 
-  async openConversation ({ clientId, clientSecret, accountId, extConsumerId, campaignId, engagementId, autoMessages, userProfile, livepersonSessionId }) {
-    const clientProperties = {
-      type: 'ClientProperties',
-      features: []
-    }
-    if (autoMessages) clientProperties.features.push('AUTO_MESSAGES')
+  async openConversation ({ clientId, clientSecret, accountId, extConsumerId, campaignId, engagementId, clientPropertiesCap, userProfile, livepersonSessionId }) {
+    const clientProperties = Object.assign(this.defaultClientProperties, clientPropertiesCap || {})
 
     const userProfileRequestObject = {
       kind: 'req',
