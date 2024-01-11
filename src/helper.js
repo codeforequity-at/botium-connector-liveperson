@@ -134,7 +134,7 @@ class Helper {
         'content-type': 'application/json',
         authorization: await this.getAccessToken(clientId, clientSecret, accountId),
         'X-LP-ON-BEHALF': await this.getJwsToken(clientId, clientSecret, accountId, extConsumerId),
-        'Client-Properties': clientProperties
+        'Client-Properties': JSON.stringify(clientProperties)
       },
       body: [userProfileRequestObject, consumerConversationReqObject],
       json: true,
