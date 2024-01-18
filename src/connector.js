@@ -165,9 +165,9 @@ class BotiumConnectorLivePerson {
           const metadata = _.get(botMsg.sourceData, 'body.changes[0].originatorMetadata')
 
           const processElementRecursive = (element, rootCard) => {
-            for(const subElement of element.elements) {
+            for (const subElement of element.elements) {
               if (subElement.type === 'text') {
-                if(subElement.tag === 'title') {
+                if (subElement.tag === 'title') {
                   rootCard.text = rootCard.text ? `${rootCard.text}\n${subElement.text}` : subElement.text
                 } else if (subElement.tag === 'subtitle') {
                   rootCard.subtext = rootCard.subtext ? `${rootCard.subtext}\n${subElement.text}` : subElement.text
@@ -202,7 +202,7 @@ class BotiumConnectorLivePerson {
                 }
               }
             } else if (event.type === 'RichContentEvent') {
-              if(event.content.tag && event.content.tag === 'card') {
+              if (event.content.tag && event.content.tag === 'card') {
                 let card = {
                   buttons: [],
                   media: []
