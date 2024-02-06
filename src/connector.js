@@ -79,7 +79,7 @@ class BotiumConnectorLivePerson {
             'content-type': 'application/json',
             authorization: await this.helper.getAccessToken(clientId, clientSecret, accountId),
             'X-LP-ON-BEHALF': await this.helper.getJwsToken(clientId, clientSecret, accountId, extConsumerId),
-            'Client-Properties': clientProperties
+            'Client-Properties': JSON.stringify(clientProperties)
           }
           requestOptions.headers = Object.assign(requestOptions.headers || {}, headers)
 
@@ -164,6 +164,27 @@ class BotiumConnectorLivePerson {
 
           const metadata = _.get(botMsg.sourceData, 'body.changes[0].originatorMetadata')
 
+          const processElementRecursive = (element, rootCard) => {
+            for (const subElement of element.elements) {
+              if (subElement.type === 'text') {
+                if (subElement.tag === 'title') {
+                  rootCard.text = rootCard.text ? `${rootCard.text}\n${subElement.text}` : subElement.text
+                } else if (subElement.tag === 'subtitle') {
+                  rootCard.subtext = rootCard.subtext ? `${rootCard.subtext}\n${subElement.text}` : subElement.text
+                } else {
+                  rootCard.content = rootCard.content ? `${rootCard.content}\n${subElement.text}` : subElement.text
+                }
+              } else if (subElement.type === 'button') {
+                rootCard.buttons.push(mapButton(subElement))
+              } else if (subElement.type === 'image') {
+                rootCard.media.push(mapMedia(subElement))
+              } else if (subElement.type === 'vertical' || subElement.type === 'horizontal' || subElement.type === 'carousel') {
+                rootCard = processElementRecursive(subElement, rootCard)
+              }
+            }
+            return rootCard
+          }
+
           if (metadata && metadata.role !== 'CONSUMER' &&
             event && (event.type === 'ContentEvent' || event.type === 'RichContentEvent')) {
             debug(`Response Body: ${util.inspect(botMsg.sourceData, false, null, true)}`)
@@ -181,48 +202,28 @@ class BotiumConnectorLivePerson {
                 }
               }
             } else if (event.type === 'RichContentEvent') {
-              if (event.content.tag === 'generic') {
-                const elements = event.content.elements
-                const indexes = elements.reduce((a, e, i) => {
-                  if (e.tag === 'title') { a.push(i) }
-                  return a
-                }, [])
-                for (const i of indexes) {
-                  const card = {
-                    text: elements[i].text
-                  }
-                  if (elements[i - 1] && elements[i - 1].type === 'image') {
-                    card.media = [mapMedia(elements[i - 1])]
-                  }
-
-                  if (elements[i + 1] && elements[i + 1].tag === 'subtitle') {
-                    card.content = elements[i + 1].text
-                    if (elements[i + 2] && elements[i + 2].tag === 'button') {
-                      card.buttons = []
-                      for (const e of elements[i + 2].elements) {
-                        if (e.type === 'button') {
-                          card.buttons.push(mapButton(e))
-                        }
-                      }
-                    }
-                  } else if (elements[i + 1] && elements[i + 1].tag === 'button') {
-                    card.buttons = []
-                    for (const e of elements[i + 1].elements) {
-                      if (e.type === 'button') {
-                        card.buttons.push(mapButton(e))
-                      }
-                    }
-                  }
-                  botMsg.cards.push(card)
+              if (event.content.tag && event.content.tag === 'card') {
+                let card = {
+                  buttons: [],
+                  media: []
                 }
+                card = processElementRecursive(event.content, card)
+                botMsg.cards.push(card)
               } else {
                 for (const element of event.content.elements) {
                   if (element.type === 'text') {
-                    botMsg.messageText = element.text
+                    botMsg.messageText = botMsg.messageText ? `${botMsg.messageText}\n${element.text}` : element.text
                   } else if (element.type === 'button') {
                     botMsg.buttons.push(mapButton(element))
                   } else if (element.type === 'image') {
-                    botMsg.media.push(mapMedia(event.content))
+                    botMsg.media.push(mapMedia(element))
+                  } else if (element.type === 'vertical' || element.type === 'horizontal' || element.type === 'carousel') {
+                    let card = {
+                      buttons: [],
+                      media: []
+                    }
+                    card = processElementRecursive(element, card)
+                    botMsg.cards.push(card)
                   } else {
                     debug(`The following RichContent element is not supported yet: ${JSON.stringify(element, null, 2)}`)
                   }
