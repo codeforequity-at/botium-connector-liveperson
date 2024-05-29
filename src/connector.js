@@ -228,6 +228,11 @@ class BotiumConnectorLivePerson {
                     debug(`The following RichContent element is not supported yet: ${JSON.stringify(element, null, 2)}`)
                   }
                 }
+                if (event.quickReplies && event.quickReplies.type === 'quickReplies') {
+                  for (const quickReply of event.quickReplies.replies) {
+                    botMsg.buttons.push(mapButton(quickReply))
+                  }
+                }
               }
             }
           }
