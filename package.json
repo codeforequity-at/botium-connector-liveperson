@@ -1,6 +1,6 @@
 {
   "name": "botium-connector-liveperson",
-  "version": "0.0.11",
+  "version": "0.0.12",
   "description": "Botium Connector for Live Person",
   "main": "dist/botium-connector-liveperson-cjs.js",
   "module": "dist/botium-connector-liveperson-es.js",
