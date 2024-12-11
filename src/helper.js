@@ -1,4 +1,3 @@
-const request = require('request-promise-native')
 const _ = require('lodash')
 const randomize = require('randomatic')
 const debug = require('debug')('botium-connector-liveperson')
@@ -21,16 +20,17 @@ class Helper {
 
   async getDomainByServiceName (serviceName, accountId) {
     if (this.baseURIs.length === 0) {
-      const requestOptions = {
-        url: `https://api.liveperson.net/api/account/${accountId}/service/baseURI?version=1.0`,
+      const response = await fetch(`https://api.liveperson.net/api/account/${accountId}/service/baseURI?version=1.0`, {
         method: 'GET',
         headers: {
-          'content-type': 'application/json'
-        },
-        timeout: 30000,
-        json: true
+          'Content-Type': 'application/json'
+        }
+      })
+      if (!response.ok) {
+        const errorDetails = await response.text()
+        throw new Error(`HTTP error! Status: ${response.status}, Message: ${errorDetails}`)
       }
-      const result = await request(requestOptions)
+      const result = await response.json()
       this.baseURIs.push(...result.baseURIs)
     }
     const baseURIObject = _.find(this.baseURIs, u => u.service === serviceName)
@@ -42,15 +42,24 @@ class Helper {
     const requestOptions = {
       url: `https://${jwtDomain}/sentinel/api/account/${accountId}/app/token?v=1.0&grant_type=client_credentials`,
       method: 'POST',
-      timeout: 30000,
-      form: {
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      body: new URLSearchParams({
         client_id: clientId,
         client_secret: clientSecret
-      },
-      json: true
+      })
     }
+
     debug(`Request access token with the following requestOptions: ${JSON.stringify(requestOptions, null, 2)}`)
-    const result = await request(requestOptions)
+    const response = await fetch(requestOptions.url, requestOptions)
+
+    if (!response.ok) {
+      const errorDetails = await response.text()
+      throw new Error(`HTTP error! Status: ${response.status}, Message: ${errorDetails}`)
+    }
+
+    const result = await response.json()
     this.accessToken = result.access_token
   }
 
@@ -77,17 +86,25 @@ class Helper {
         url: `https://${jwsDomain}/api/account/${accountId}/consumer`,
         method: 'POST',
         headers: {
-          'content-type': 'application/json',
+          'Content-Type': 'application/json',
           authorization: await this.getAccessToken(clientId, clientSecret, accountId)
         },
         body: {
           ext_consumer_id: extConsumerId
-        },
-        json: true,
-        timeout: 30000
+        }
       }
       debug(`Request consumerJWS with the following requestOptions: ${JSON.stringify(requestOptions, null, 2)}`)
-      const result = await request(requestOptions)
+      const response = await fetch(requestOptions.url, {
+        method: requestOptions.method,
+        headers: requestOptions.headers,
+        body: JSON.stringify(requestOptions.body)
+      })
+      if (!response.ok) {
+        const errorDetails = await response.text()
+        throw new Error(`HTTP error! Status: ${response.status}, Message: ${errorDetails}`)
+      }
+
+      const result = await response.json()
       this.jwsToken = result.token
     }
 
@@ -136,12 +153,20 @@ class Helper {
         'X-LP-ON-BEHALF': await this.getJwsToken(clientId, clientSecret, accountId, extConsumerId),
         'Client-Properties': JSON.stringify(clientProperties)
       },
-      body: [userProfileRequestObject, consumerConversationReqObject],
-      json: true,
-      timeout: 30000
+      body: [userProfileRequestObject, consumerConversationReqObject]
     }
     debug(`Open conversation with the following requestOptions: ${JSON.stringify(requestOptions, null, 2)}`)
-    const result = await request(requestOptions)
+    const response = await fetch(requestOptions.url, {
+      method: requestOptions.method,
+      headers: requestOptions.headers,
+      body: JSON.stringify(requestOptions.body)
+    })
+    if (!response.ok) {
+      const errorDetails = await response.text()
+      throw new Error(`HTTP error! Status: ${response.status}, Message: ${errorDetails}`)
+    }
+
+    const result = await response.json()
     const conversation = _.find(result, r => r.reqId === consumerReqId)
     return conversation ? conversation.body.conversationId : undefined
   }
@@ -174,7 +199,17 @@ class Helper {
       timeout: 30000
     }
     debug(`Close conversation with the following requestOptions: ${JSON.stringify(requestOptions, null, 2)}`)
-    await request(requestOptions)
+
+    const response = await fetch(requestOptions.url, {
+      method: requestOptions.method,
+      headers: requestOptions.headers,
+      body: JSON.stringify(requestOptions.body)
+    })
+    if (!response.ok) {
+      const errorDetails = await response.text() // Extract error details
+      throw new Error(`HTTP error! Status: ${response.status}, Message: ${errorDetails}`)
+    }
+    return response.json()
   }
 }
 
