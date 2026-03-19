@@ -1,13 +1,15 @@
 {
   "name": "botium-connector-liveperson",
-  "version": "0.0.12",
+  "version": "0.0.13",
   "description": "Botium Connector for Live Person",
   "main": "dist/botium-connector-liveperson-cjs.js",
   "module": "dist/botium-connector-liveperson-es.js",
   "scripts": {
     "build": "npm run eslint && rollup -c",
     "eslint": "eslint index.js src/*.js",
-    "eslint-fix": "eslint --fix index.js src/*.js"
+    "eslint-fix": "eslint --fix index.js src/*.js",
+    "test": "echo 'Not implemented yet'",
+    "test-nightly": "echo 'Not implemented yet'"
   },
   "author": "Botium GmbH",
   "license": "MIT",
@@ -34,11 +36,10 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.6.2",
-    "debug": "^4.1.1",
-    "lodash": "^4.17.15",
+    "debug": "^4.4.3",
+    "lodash": "^4.17.23",
     "mime-types": "^2.1.35",
-    "randomatic": "^3.1.1",
-    "request-promise-native": "^1.0.8"
+    "randomatic": "^3.1.1"
   },
   "peerDependencies": {
     "botium-core": ">= 1.9.10"
