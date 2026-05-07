@@ -11,8 +11,9 @@ export default {
       sourcemap: true
     },
     {
-      file: 'dist/botium-connector-liveperson-cjs.js',
+      file: 'dist/botium-connector-liveperson-cjs.cjs',
       format: 'cjs',
+      exports: 'default',
       sourcemap: true
     }
   ],

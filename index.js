@@ -1,7 +1,7 @@
-const BotiumConnectorLivePerson = require('./src/connector')
-const AsserterSkillClass = require('./src/asserterskill')
+import BotiumConnectorLivePerson from './src/connector.js'
+import AsserterSkillClass from './src/asserterskill.js'
 
-module.exports = {
+export default {
   PluginVersion: 1,
   PluginClass: BotiumConnectorLivePerson,
   PluginAsserters: {

@@ -1,12 +1,14 @@
-const util = require('util')
-const _ = require('lodash')
-const randomize = require('randomatic')
-const mime = require('mime-types')
-const debug = require('debug')('botium-connector-liveperson')
-const Helper = require('./helper')
+import util from 'util'
+import _ from 'lodash'
+import randomize from 'randomatic'
+import mime from 'mime-types'
+import Debug from 'debug'
+import Helper from './helper.js'
+import SimpleRestContainer from 'botium-core/src/containers/plugins/SimpleRestContainer'
+import botiumcore from 'botium-core'
 
-const SimpleRestContainer = require('botium-core/src/containers/plugins/SimpleRestContainer')
-const { Capabilities: CoreCapabilities } = require('botium-core')
+const debug = Debug('botium-connector-liveperson')
+const { Capabilities: CoreCapabilities } = botiumcore
 
 const ASYNC_MESSAGING_SERVICE_NAME = 'asyncMessagingEnt'
 
@@ -289,4 +291,4 @@ class BotiumConnectorLivePerson {
   }
 }
 
-module.exports = BotiumConnectorLivePerson
+export default BotiumConnectorLivePerson

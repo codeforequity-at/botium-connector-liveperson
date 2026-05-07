@@ -2,8 +2,16 @@
   "name": "botium-connector-liveperson",
   "version": "0.0.13",
   "description": "Botium Connector for Live Person",
-  "main": "dist/botium-connector-liveperson-cjs.js",
+  "type": "module",
+  "main": "dist/botium-connector-liveperson-cjs.cjs",
   "module": "dist/botium-connector-liveperson-es.js",
+  "exports": {
+    ".": {
+      "import": "./dist/botium-connector-liveperson-es.js",
+      "require": "./dist/botium-connector-liveperson-cjs.cjs",
+      "default": "./dist/botium-connector-liveperson-cjs.cjs"
+    }
+  },
   "scripts": {
     "build": "npm run eslint && rollup -c",
     "eslint": "eslint index.js src/*.js",

@@ -1,5 +1,5 @@
 // const debug = require('debug')('botium-connector-liveperson-asserter-skill')
-const _ = require('lodash')
+import _ from 'lodash'
 
 class BotiumAsserterLivepersonSkill {
   constructor (context, caps = {}, args = {}) {
@@ -32,4 +32,4 @@ class BotiumAsserterLivepersonSkill {
   }
 }
 
-module.exports = BotiumAsserterLivepersonSkill
+export default BotiumAsserterLivepersonSkill

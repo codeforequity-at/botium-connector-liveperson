@@ -1,6 +1,8 @@
-const _ = require('lodash')
-const randomize = require('randomatic')
-const debug = require('debug')('botium-connector-liveperson')
+import _ from 'lodash'
+import randomize from 'randomatic'
+import Debug from 'debug'
+
+const debug = Debug('botium-connector-liveperson')
 
 const JWT_TOKEN_SERVICE_NAME = 'sentinel'
 const JWS_TOKEN_SERVICE_NAME = 'idp'
@@ -279,4 +281,4 @@ class Helper {
   }
 }
 
-module.exports = Helper
+export default Helper
