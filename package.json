@@ -1,6 +1,6 @@
 {
   "name": "botium-connector-liveperson",
-  "version": "0.0.13",
+  "version": "0.0.14",
   "description": "Botium Connector for Live Person",
   "type": "module",
   "main": "dist/botium-connector-liveperson-cjs.cjs",
